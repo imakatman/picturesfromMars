@@ -1,0 +1,6 @@
+{
+  "name": "Rover",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Rover.js"
+}
