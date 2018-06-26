@@ -4,11 +4,11 @@ import './App.css';
 import Home from './routes/Home';
 
 class App extends Component {
-  constructor(props){
+  constructor(props) {
     super(props)
   }
 
-  componentDidMount(){
+  componentDidMount() {
     // Fetch basic data about each rover: 1) name, number of photos, latest day taken photo
 
   }
@@ -16,7 +16,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Home/>
+        <Home />
       </div>
     );
   }

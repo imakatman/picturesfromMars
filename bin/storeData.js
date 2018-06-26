@@ -4,8 +4,10 @@
 const fetch  = require('node-fetch');
 const Mongo  = require("mongodb").MongoClient;
 const Assert = require("assert");
+const fs = require("fs");
 
-const url = `mongodb://imakatman:1nsanse%26@ds263670.mlab.com:63670/heroku_phrb56pn`;
+const url = "mongodb://imakatman:1nsanse%26@ds263670.mlab.com:63670/heroku_phrb56pn";
+const pathToDataDir = "../src/redux/data";
 
 // let manifestPromise = new Promise((res, rej) => {
 //   fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers?api_key=8m8bkcVYqxE5j0vQL2wk1bpiBGibgaqCrOvwZVyU`)
@@ -66,8 +68,20 @@ Mongo.connect(url, {
   console.log("Database connected!");
 
   let dbo = db.db("heroku_phrb56pn");
-  let cursor = dbo.collection("rovers").find();
 
-  dbo.close();
+  dbo.collection("rovers").find({}).toArray(function(err, result) {
+    if (err) throw err;
+    const data = JSON.stringify(result);
+    let stream = fs.createWriteStream(`${pathToDataDir}/rovers.json`);
+
+    stream.once('open', function () {
+      stream.end(data);
+      console.log("Inserted rovers data into rovers.json");
+    });
+    stream.on('error', function (err) {
+      console.log(err);
+    });
+    db.close();
+  });
 });
 
