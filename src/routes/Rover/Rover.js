@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 const mapStateToProps = (state, ownProps) => {
   const latestDay    = state[thisRover].most_recent_day;
   const chosenDay     = state.userChosen.Day;
-  const chosenCamera = state.userChosen.C\camera;
+  const chosenCamera = state.userChosen.camera;
 
   return {
     rover: ownProps.rover, // ID

@@ -10,7 +10,6 @@ const url           = "mongodb://imakatman:1nsanse%26@ds117111.mlab.com:17111/pi
 const pathToDataDir = "../src/redux/data";
 
 let rovers = [];
-//let manifestPromise =
 function storeLocalRovers(){
   return new Promise((res, rej) => {
     fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers?api_key=8m8bkcVYqxE5j0vQL2wk1bpiBGibgaqCrOvwZVyU`)
@@ -34,45 +33,12 @@ function storeLocalRovers(){
 }
 
 storeLocalRovers().then(()=> {
-  
+  /*
+  Make api call with sols not earth dates but store data by earth date.
+   It will be easier to loop through each day by sol.
+   */
 });
 
-// let camerasPromise = new Promise((res, rej) => {
-//   fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers?api_key=8m8bkcVYqxE5j0vQL2wk1bpiBGibgaqCrOvwZVyU`)
-//     .then(resp => resp.json())
-//     // .then(json => res(json))
-//     .then(json => console.log(json))
-//     .catch(err => {
-//       console.error(err);
-//       rej(err)
-//     })
-// })
-
-// manifestPromise.then(values => console.log(values))
-
-// manifestPromise.then(values => {
-//   Mongo.connect(url, {
-//     uri_decode_auth: true
-//   }, function (err, db) {
-//     if (err) throw err;
-//     console.log("Database connected!");
-//
-//     var dbo = db.db("picturesfrommars");
-//     // dbo.collection("rovers").insertMany(values.rovers, function (err, res) {
-//     //   if (err) throw err;
-//     //   console.log("Multiple documents inserted");
-//     //   db.close();
-//     // });
-//
-//     dbo.collection("rovers").insertMany(values.rovers, function (err, res) {
-//       if (err) throw err;
-//       console.log("Multiple documents inserted");
-//       db.close();
-//     });
-//
-//     // db.close();
-//   });
-// });
 
 /**
  * Create a JSON file from "rovers" collection
