@@ -26,20 +26,20 @@ const exampleStore = {
       // pictures: [/*Just collection of ids*/]
     }
   },
-  Cameras: {
-    ...,
-    CameraId: {
-      id: 'string',
-      name: 'string',
-      pictures: [
-        //ids
-      ],
-      emptyDays: [],
-      // availableDays: [],
-      rover: 'string'
-    }
-  },
-  Date: {
+  // Cameras: {
+  //   ...,
+  //   CameraId: {
+  //     id: 'string',
+  //     name: 'string',
+  //     pictures: [
+  //       //ids
+  //     ],
+  //     emptyDays: [],
+  //     // availableDays: [],
+  //     rover: 'string'
+  //   }
+  // },
+  Dates: {
     "date": [
       {
         "photo_id": {
@@ -52,15 +52,15 @@ const exampleStore = {
       }
     ]
   },
-  Pictures: [
-   {
-     id: {
-       src: 'string',
-       day: 'string',
-       sol: 'number'
-     }
-   }
-  ],
+  // Pictures: [
+  //  {
+  //    id: {
+  //      src: 'string',
+  //      day: 'string',
+  //      sol: 'number'
+  //    }
+  //  }
+  // ],
   // EarthDate: {
   //   EarthDate: {
   //     Rover: {
