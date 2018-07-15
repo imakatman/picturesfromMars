@@ -1,4 +1,5 @@
 /**
+ * @TODO: Create a document that lists all the available days in MongoDB
  * Created by hope.kim on 6/21/18.
  */
 const fetch  = require('node-fetch');
@@ -84,11 +85,9 @@ getRovers().then(vals => {
 
     updateRovers(dbo, roversData.rovers);
 
-    db.close();
-
-    [photoGrabbingData[0]].map(r => {
+    const promises = photoGrabbingData.map(r => {
       console.log("starting the photo storing process with", r.queryName)
-      // return new Promise((res, rej) => {
+      return new Promise((res, rej) => {
         fetch(`${apiUrl}/${r.queryName}/photos?sol=${r.maxSol}&api_key=${apiKey}`)
           .then(resp => resp.json())
           .then(json => {
@@ -101,8 +100,23 @@ getRovers().then(vals => {
               id: roverId,
               name: roverName,
               [earth_date]: photos.map(p => {
+                /*
+                * Returned data for photos repeats redundant data
+                * about the rover so the script must be specific about
+                * what data to send to the db
+                */
                 return {
-                  [p.id]: p
+                  [p.id]: {
+                    id: p.id,
+                    sol: p.id,
+                    camera: p.camera,
+                    img_src: p.img_src,
+                    earth_date: p.earth_date,
+                    rover: {
+                      id: p.rover.id,
+                      name: p.rover.name
+                    }
+                  }
                 }
               })
             };
@@ -118,24 +132,22 @@ getRovers().then(vals => {
                 console.log("first line of callback")
                 if (err) throw err;
                 console.log("updated", earth_date, "for", roverName)
-                // res(earth_date);
-                db.close();
+                res(earth_date);
               }
             );
           })
           // .then(json => console.log(json))
           .catch(err => {
             console.error(err);
-            // return rej(err)
+            return rej(err);
           });
       });
     });
 
-    // Promise.all(promises).then(vals => {
-    //   console.log("All promises have resolved")
-    //   db.close()
-    // })
-  // })
+    Promise.all(promises).then(() => {
+      db.close()
+    })
+  })
 });
 
 /**

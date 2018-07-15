@@ -1,3 +1,7 @@
+/*
+* Approximate model for database
+* */
+
 const dbModel = {
   rovers: {
     ...,
