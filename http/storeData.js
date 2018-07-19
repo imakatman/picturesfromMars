@@ -6,6 +6,7 @@ const fetch = require('node-fetch');
 const Mongo = require("mongodb").MongoClient;
 const Assert = require("assert");
 const fs = require("fs");
+const moment = require("moment");
 
 const apiUrl = "https://api.nasa.gov/mars-photos/api/v1/rovers";
 const apiKey = "8m8bkcVYqxE5j0vQL2wk1bpiBGibgaqCrOvwZVyU";
@@ -66,12 +67,14 @@ function grabPhotos(database, fsrd, res, rej) {
 
     const roverId = fsrd.id,
         roverName = fsrd.name,
-        maxSol = fsrd.maxSol;
+        maxSol = fsrd.maxSol - 10;
 
-    let promises = [];
+    let promises = [],
+        prevEarthDate;
 
 
     for (let i = maxSol; i > maxSol - 10; i--) {
+
         let promise = new Promise((resolve, reject) => {
             fetch(`${apiUrl}/${fsrd.queryName}/photos?sol=${i}&api_key=${apiKey}`)
                 .then(resp => resp.json())
@@ -80,6 +83,8 @@ function grabPhotos(database, fsrd, res, rej) {
                     if (json.photos.length > 0) {
                         const photos = json.photos,
                             earth_date = photos[0].earth_date;
+
+                        prevEarthDate = photos[0].earth_date;
 
                         formattedData = {
                             id: roverId,
@@ -106,10 +111,14 @@ function grabPhotos(database, fsrd, res, rej) {
                             })
                         };
                     } else {
+                        const earthDate = moment(prevEarthDate).subtract(1, "days").format("YYYY-MM-DD");
+
+                        console.log(earthDate)
+
                         formattedData = {
                             id: roverId,
                             name: roverName,
-                            [earth_date]: []
+                            [earthDate]: []
                         }
 
                     }
@@ -197,7 +206,7 @@ getRovers().then(resp => {
                 });
             });
 
-            return Promise.all([rp, dp]).then(vals => dbo.close()).catch(reason => console.error(reason));
+            return Promise.all([rp, dp]).then(vals => db.close()).catch(reason => console.error(reason));
         })
     })
 });
