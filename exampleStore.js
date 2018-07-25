@@ -1,10 +1,10 @@
 const exampleStore = {
   // ** Redux specific data
   userChosen: {
-    Rover: 'string',
-    Camera: 'string',
-    Day: 'string',
-    Picture: 'string',
+    rover: 'string',
+    camera: 'string',
+    day: 'string',
+    picture: 'string',
   },
   recentlyViewed: [
     // Can only be 4 photos

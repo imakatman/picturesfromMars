@@ -1,22 +1,37 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Route, NavLink} from 'react-router-dom';
+import Description from '../../components/Description';
 
 const mapStateToProps = (state, ownProps) => {
-  const latestDay    = state[thisRover].most_recent_day;
-  const chosenDay     = state.userChosen.Day;
-  const chosenCamera = state.userChosen.camera;
+  console.log(ownProps)
+
+  const thisRoverName = ownProps.match.path.replace(new RegExp("/"), "");
+  const thisRover     = state.rovers.list.filter(r => thisRoverName === r.name)[0].id;
+
+  const latestDay = state.rovers[thisRover].max_date;
+
+  const choseADay = state.userChosen.day ? true : false;
+  const thisDay   = state.userChosen.day;
+
+  const choseACamera = state.userChosen.camera ? true : false;
+  const thisCamera   = state.userChosen.camera;
+
+  console.log(state.rovers)
 
   return {
-    rover: ownProps.rover, // ID
-    hasChoseCamera: state.userChosen.Camera ? true : false,
-    camera: choseCamera ? state.Cameras[thisCamera] : null,
-    day: chosenDay ? state.Date[chosenDay] : state.Date[latestDay],
-    picture: state.userChosen.Camera
+    rover: thisRover, // ID
+    cameras: state.rovers[thisRover].cameras,
+    hasChoseCamera: choseACamera ? true : false,
+    camera: choseACamera ? state.rovers[thisRover].cameras.filter(c => c.id === thisCamera) : null,
+    day: choseADay ? state.days[thisRover][thisDay] : state.days[thisRover][latestDay],
+    picture: state.userChosen.picture
   }
 }
 
 const mapDispatchToProps = dispatch => {
-  return{
-    pickADay: (id) => dispatch(pickADay(id)),
+  return {
+    // pickADay: (id) => dispatch(pickADay(id)),
   }
 }
 
@@ -30,22 +45,23 @@ class Rover extends Component {
   }
 
   render() {
+    const { match, rover, cameras } = this.props;
+
     return (
       <div>
-        {/*
-          Component // Description
-          Some basic info about this rover
-          1) Rover Id (needed)
-          2) Name
-          3) TotalPhotos
-          4) Landed Day
-          5)Most Recent Day
-          */}
+        <Description rover={rover} />
+        <ul>
+          {cameras.map(c => {
+            return (
+              <li key={`${rover}-camera-li-${c.name}`}>
+                <NavLink to={`${match.url}/${c.name.toLowerCase()}`}>
+                  {c.full_name}
+                </NavLink>
+              </li>
+            )
+          })}
+        </ul>
 
-        {/*
-          Cameras mapped out
-          1) Rover Id (needed)
-         */}
         {/*
           Photos from latest day mapped out (Component)
           Camera chosen or not chosen? (Needed) bool
@@ -74,3 +90,5 @@ class Rover extends Component {
     )
   }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Rover);

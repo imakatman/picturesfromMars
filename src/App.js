@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import logo from './logo.svg';
+import { Route} from 'react-router-dom';
 import './App.css';
 import Home from './routes/Home';
 
@@ -14,10 +16,16 @@ class App extends Component {
   }
 
   render() {
+    const homeRoute = (props) => {
+      return(
+        <Home {...props}/>
+      )
+    }
+
     return (
-      <div className="App">
-        <Home />
-      </div>
+      <BrowserRouter>
+        <Route render={(props) => homeRoute(props)} />
+      </BrowserRouter>
     );
   }
 }
