@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Route, NavLink } from 'react-router-dom';
 import Description from '../../components/Description';
 import Gallery from '../../components/Gallery';
-import { cameraChosen } from "../../redux/actions/userChooses";
+import { roverChosen } from "../../redux/actions/userChooses";
 
 const mapStateToProps = (state, ownProps) => {
   const thisRoverName = ownProps.match.params.rover;
@@ -26,7 +26,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-
+    chooseRover: (id) => dispatch(roverChosen(id))
   }
 }
 
@@ -35,8 +35,10 @@ class Rover extends Component {
     super(props);
   }
 
-  componentDidMount() {
-    // Fetch cameras specific to this rover and latest photos
+  componentWillMount() {
+    const { rover, chooseRover } = this.props;
+
+    chooseRover(rover)
   }
 
   render() {
@@ -56,7 +58,9 @@ class Rover extends Component {
             )
           })}
         </ul>
+        {rover &&
         <Route path={`${match.url}/:camera`} render={props => <Gallery {...props}/>}/>
+        }
       </div>
     )
   }

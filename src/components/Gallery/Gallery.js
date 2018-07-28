@@ -4,16 +4,19 @@ import { Route, NavLink } from 'react-router-dom';
 import { cameraChosen } from "../../redux/actions/userChooses";
 
 const mapStateToProps = (state, ownProps) => {
+  console.log(state)
+
+  const chosenRover = state.userChosen.rover;
   const chosenCamera = ownProps.match.params.camera;
 
-  console.log(chosenCamera)
-
-  return {}
+  return {
+    camera: chosenCamera
+  }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    pickACamera: (id) => dispatch(cameraChosen(id)),
+    chooseCamera: (id) => dispatch(cameraChosen(id))
   }
 }
 
@@ -23,13 +26,21 @@ class Gallery extends Component {
   }
 
   componentDidMount() {
-    // Fetch cameras specific to this rover and latest photos
+    const { camera, chooseCamera } = this.props;
+
+    chooseCamera(camera)
+  }
+
+  componentDidUpdate(prevProps) {
+    const { camera, chooseCamera } = this.props;
+
+    if(prevProps.camera !== camera){
+      chooseCamera(camera)
+    }
   }
 
   render() {
     const { match } = this.props;
-
-    console.log(match)
 
     return (
       <div>
