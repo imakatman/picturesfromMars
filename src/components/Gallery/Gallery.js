@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Route, NavLink } from 'react-router-dom';
-import Masonry from 'react-masonry-component';
 import LazyLoad from 'react-lazy-load';
 import { cameraChosen } from "../../redux/actions/userChooses";
 
