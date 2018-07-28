@@ -1,22 +1,24 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Route, NavLink } from 'react-router-dom';
+import Masonry from 'react-masonry-component';
+import LazyLoad from 'react-lazy-load';
 import { cameraChosen } from "../../redux/actions/userChooses";
 
-const mapStateToProps = (state, ownProps) => { 
-  const thisRover = state.userChosen.rover;
+const mapStateToProps = (state, ownProps) => {
+  const thisRover    = state.userChosen.rover;
   const choseACamera = state.userChosen.camera ? true : false;
-  const thisCamera = ownProps.match.params.camera;
-  const latestDay = state.rovers[thisRover].max_date;
-  const choseADay = state.userChosen.day ? true : false;
-  const thisDay   = state.userChosen.day;
+  const thisCamera   = ownProps.match.params.camera;
+  const latestDay    = state.rovers[thisRover].max_date;
+  const choseADay    = state.userChosen.day ? true : false;
+  const thisDay      = state.userChosen.day;
 
   return {
     camera: thisCamera,
     hasChoseCamera: choseACamera ? true : false,
     day: choseADay ? thisDay : latestDay,
-    photos: choseADay ? state.days[thisRover][thisDay] : state.days[thisRover][latestDay],
-    picture: state.userChosen.picture
+    pictures: choseADay ? state.days[thisRover][thisDay] : state.days[thisRover][latestDay],
+    chosenPicture: state.userChosen.picture
   }
 }
 
@@ -40,18 +42,36 @@ class Gallery extends Component {
   componentDidUpdate(prevProps) {
     const { camera, chooseCamera } = this.props;
 
-    if(prevProps.camera !== camera){
+    if (prevProps.camera !== camera) {
       chooseCamera(camera)
     }
   }
 
   render() {
-    const { day } = this.props;
+    const { day, pictures } = this.props;
 
-    console.log(day)
+    console.log(pictures)
 
     return (
       <div>
+        {/*<Masonry*/}
+          {/*options={{ transitionDuration: 0 }}*/}
+          {/*className="camera-gallery"*/}
+          {/*elementType="ul">*/}
+          <ul className={"columns"}>
+          {pictures.map(p => {
+            const key = Object.keys(p)
+            return (
+              <li key={p.id} className="column is-3-desktop" style={{height:480}}>
+                <LazyLoad height={480}>
+                  <div style={{backgroundImage:`url(${p[key].img_src})`,height:480}}/>
+                  {/*<img src={p[key].img_src} alt={`Picture taken by ${p[key].camera.name} on ${p.eart_date}`} />*/}
+                </LazyLoad>
+              </li>
+            )
+          })}
+          </ul>
+        {/*</Masonry>*/}
         {/*
           Photos from latest day mapped out (Component)
           Camera chosen or not chosen? (Needed) bool
