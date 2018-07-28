@@ -9,7 +9,9 @@ const fs     = require("fs");
 const moment = require("moment");
 
 const apiUrl        = "https://api.nasa.gov/mars-photos/api/v1/rovers";
-const apiKey        = "8m8bkcVYqxE5j0vQL2wk1bpiBGibgaqCrOvwZVyU";
+//const apiKey        = "8m8bkcVYqxE5j0vQL2wk1bpiBGibgaqCrOvwZVyU";
+// const apiKey        = "a4q0jhngYKp9kn0cuwvKMHtKz7IrkKtFBRaiMv5t";
+const apiKey = "ef0eRn0aLh0Byb8q7wCniHbiqcjfDWITSIJVh9xy";
 const username      = encodeURIComponent("admin");
 const password      = encodeURIComponent("D3$'6WD5Qfb%Lgwy");
 const mgurl         = `mongodb://${username}:${password}@ds117111.mlab.com:17111/picturesfrommars`;
@@ -74,26 +76,33 @@ function grabPhotos(database, fsrd, res, rej) {
   let chain = Promise.resolve(),
       prevEarthDate;
 
-  for (let i = maxSol; i > maxSol - 70; i--) {
-    let earthDate, earth_date;
+  function Wait(){
+    return new Promise(r => setTimeout(r, 1000))
+  }
 
+  for (let i = maxSol; i > maxSol - 50; i--) {
+    let earthDate, earth_date;
+    console.log(chain)
     chain = chain.then(() => {
       new Promise((resolve, reject) => {
-        console.log(chain);
 
         fetch(`${apiUrl}/${fsrd.queryName}/photos?sol=${i}&api_key=${apiKey}`)
           .then(resp => resp.json())
           .then(json => {
-            console.log(json)
-
             let formattedData = {};
+
+            let found;
 
             if (json.photos) {
               if (json.photos.length > 0) {
+                found = true;
+
                 const photos = json.photos;
 
-                earth_date = photos[0].earth_date;
+                earth_date    = photos[0].earth_date;
                 prevEarthDate = photos[0].earth_date;
+
+                console.log("found photos for, ", earth_date)
 
                 formattedData = {
                   id: roverId,
@@ -120,6 +129,13 @@ function grabPhotos(database, fsrd, res, rej) {
                   })
                 };
               } else {
+                /*
+                Because data is not returned for days with no photos, we need to manually
+                calculate it by subtracting one from previous day.
+                 */
+
+                found = false;
+
                 earthDate = moment(prevEarthDate).subtract(1, "days").format("YYYY-MM-DD");
 
                 console.log(earthDate, "is not available for", roverName)
@@ -131,14 +147,16 @@ function grabPhotos(database, fsrd, res, rej) {
                 }
 
               }
-            } else {
-              return resolve();
             }
+            // else {
+            //   console.log("json does not have the photos ")
+            //   return resolve();
+            // }
 
             database.collection("dates").updateOne({ id: roverId }, { $set: formattedData }, { upsert: true },
               function (err, result) {
                 if (err) throw err;
-                // console.log("updated for", roverName, "for", earth_date || earthDate)
+                console.log("updated for", roverName, "for", found ? earth_date : earthDate)
                 resolve();
               }
             );
@@ -150,7 +168,8 @@ function grabPhotos(database, fsrd, res, rej) {
           });
 
       })
-    });
+    }).then(Wait); /* This chained Wait has to be added after each
+        function that deals with remote calls in order to chain them in the for loop */
   }
 
   Promise.all([chain]).then(values => {
@@ -181,7 +200,6 @@ getRovers().then(resp => {
     });
 
     Promise.all(promises).then(values => {
-      console.log("promises to fetch 10 days worth of data from all rovers has been resolved")
       const rp = new Promise(function (resolve, reject) {
         dbo.collection("rovers").find({}).toArray(function (err, result) {
           if (err) throw err;
