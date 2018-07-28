@@ -3,14 +3,20 @@ import { connect } from 'react-redux';
 import { Route, NavLink } from 'react-router-dom';
 import { cameraChosen } from "../../redux/actions/userChooses";
 
-const mapStateToProps = (state, ownProps) => {
-  console.log(state)
-
-  const chosenRover = state.userChosen.rover;
-  const chosenCamera = ownProps.match.params.camera;
+const mapStateToProps = (state, ownProps) => { 
+  const thisRover = state.userChosen.rover;
+  const choseACamera = state.userChosen.camera ? true : false;
+  const thisCamera = ownProps.match.params.camera;
+  const latestDay = state.rovers[thisRover].max_date;
+  const choseADay = state.userChosen.day ? true : false;
+  const thisDay   = state.userChosen.day;
 
   return {
-    camera: chosenCamera
+    camera: thisCamera,
+    hasChoseCamera: choseACamera ? true : false,
+    day: choseADay ? thisDay : latestDay,
+    photos: choseADay ? state.days[thisRover][thisDay] : state.days[thisRover][latestDay],
+    picture: state.userChosen.picture
   }
 }
 
@@ -25,7 +31,7 @@ class Gallery extends Component {
     super(props);
   }
 
-  componentDidMount() {
+  componentWillMount() {
     const { camera, chooseCamera } = this.props;
 
     chooseCamera(camera)
@@ -40,7 +46,9 @@ class Gallery extends Component {
   }
 
   render() {
-    const { match } = this.props;
+    const { day } = this.props;
+
+    console.log(day)
 
     return (
       <div>

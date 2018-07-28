@@ -8,19 +8,10 @@ import { roverChosen } from "../../redux/actions/userChooses";
 const mapStateToProps = (state, ownProps) => {
   const thisRoverName = ownProps.match.params.rover;
   const thisRover     = state.rovers.list.filter(r => thisRoverName === r.name)[0].id;
-  const latestDay = state.rovers[thisRover].max_date;
-  const choseADay = state.userChosen.day ? true : false;
-  const thisDay   = state.userChosen.day;
-  const choseACamera = state.userChosen.camera ? true : false;
-  const thisCamera   = state.userChosen.camera;
 
   return {
     rover: thisRover, // ID
-    cameras: state.rovers[thisRover].cameras,
-    hasChoseCamera: choseACamera ? true : false,
-    camera: choseACamera ? state.rovers[thisRover].cameras.filter(c => c.id === thisCamera) : null,
-    day: choseADay ? state.days[thisRover][thisDay] : state.days[thisRover][latestDay],
-    picture: state.userChosen.picture
+    cameras: state.rovers[thisRover].cameras
   }
 }
 
