@@ -1,39 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Route, NavLink} from 'react-router-dom';
-import Description from '../../components/Description';
+import { Route, NavLink } from 'react-router-dom';
+import { cameraChosen } from "../../redux/actions/userChooses";
 
 const mapStateToProps = (state, ownProps) => {
-  const thisRoverName = ownProps.match.path.replace(new RegExp("/"), "");
-  const thisRover     = state.rovers.list.filter(r => thisRoverName === r.name)[0].id;
+  const chosenCamera = ownProps.match.params.camera;
 
-  const latestDay = state.rovers[thisRover].max_date;
+  console.log(chosenCamera)
 
-  const choseADay = state.userChosen.day ? true : false;
-  const thisDay   = state.userChosen.day;
-
-  const choseACamera = state.userChosen.camera ? true : false;
-  const thisCamera   = state.userChosen.camera;
-
-  console.log(state.rovers)
-
-  return {
-    rover: thisRover, // ID
-    cameras: state.rovers[thisRover].cameras,
-    hasChoseCamera: choseACamera ? true : false,
-    camera: choseACamera ? state.rovers[thisRover].cameras.filter(c => c.id === thisCamera) : null,
-    day: choseADay ? state.days[thisRover][thisDay] : state.days[thisRover][latestDay],
-    picture: state.userChosen.picture
-  }
+  return {}
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    // pickADay: (id) => dispatch(pickADay(id)),
+    pickACamera: (id) => dispatch(cameraChosen(id)),
   }
 }
 
-class Rover extends Component {
+class Gallery extends Component {
   constructor(props) {
     super(props);
   }
@@ -43,7 +27,9 @@ class Rover extends Component {
   }
 
   render() {
-    const { match, rover, cameras } = this.props;
+    const { match } = this.props;
+
+    console.log(match)
 
     return (
       <div>
@@ -76,4 +62,4 @@ class Rover extends Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Rover);
+export default connect(mapStateToProps, mapDispatchToProps)(Gallery);

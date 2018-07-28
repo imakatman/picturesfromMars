@@ -37,7 +37,7 @@ class Home extends Component {
             return (
               <Route
                 key={`rover-route-${i}`}
-                path={`${match.url}${r.toLowerCase()}`}
+                path={`${match.url}:rover`}
                 render={props => <Rover {...props}/>}
               />
             )

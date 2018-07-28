@@ -1,23 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Route, NavLink} from 'react-router-dom';
+import { Route, NavLink } from 'react-router-dom';
 import Description from '../../components/Description';
+import Gallery from '../../components/Gallery';
+import { cameraChosen } from "../../redux/actions/userChooses";
 
 const mapStateToProps = (state, ownProps) => {
-  console.log(ownProps)
-
-  const thisRoverName = ownProps.match.path.replace(new RegExp("/"), "");
+  const thisRoverName = ownProps.match.params.rover;
   const thisRover     = state.rovers.list.filter(r => thisRoverName === r.name)[0].id;
-
   const latestDay = state.rovers[thisRover].max_date;
-
   const choseADay = state.userChosen.day ? true : false;
   const thisDay   = state.userChosen.day;
-
   const choseACamera = state.userChosen.camera ? true : false;
   const thisCamera   = state.userChosen.camera;
-
-  console.log(state.rovers)
 
   return {
     rover: thisRover, // ID
@@ -31,7 +26,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    // pickADay: (id) => dispatch(pickADay(id)),
+
   }
 }
 
@@ -61,31 +56,7 @@ class Rover extends Component {
             )
           })}
         </ul>
-
-        {/*
-          Photos from latest day mapped out (Component)
-          Camera chosen or not chosen? (Needed) bool
-          If Chosen...
-          1) Rover Id (needed)
-          2) Camera Id (needed)
-          3) Day Id (needed)
-          Else ...
-          1) Rover Id (needed)
-          2) Day Id (needed)
-         */}
-        {/*
-          Button to view next day or previous day
-          pickADay(id)
-        */}
-        {/*
-          Calender to view photos from a specific day
-          pickADay(id)
-        */}
-        {/*
-          Component: (Modal)
-          Modal of photo selected
-          1) Picture Id (needed)
-         */}
+        <Route path={`${match.url}/:camera`} render={props => <Gallery {...props}/>}/>
       </div>
     )
   }
