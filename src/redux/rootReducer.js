@@ -4,9 +4,15 @@ import {
   DAY_CHOSEN,
   PICTURE_CHOSEN
 } from './actions/userChooses';
+import {CALCULATED_SCREEN_SIZE} from "./actions/screenSize";
 
 export default function rootReducer(state = {}, action) {
   switch (action.type) {
+    case CALCULATED_SCREEN_SIZE:
+      return Object.assign({}, state, {
+        ...state,
+        device: action.device
+      });
     case ROVER_CHOSEN:
       return Object.assign({}, state, {
         ...state,

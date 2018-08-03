@@ -1,10 +1,17 @@
 import React, { Component } from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import logo from './logo.svg';
-import { Route} from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
+import { connect } from 'react-redux';
 import 'bulma/css/bulma.min.css';
+import logo from './logo.svg'
 import './App.css';
 import Home from './routes/Home';
+import { calculateScreenSize } from './redux/actions/screenSize';
+
+const mapDispatchToProps = dispatch => {
+  return{
+    detectDevice: () => dispatch(calculateScreenSize())
+  }
+}
 
 class App extends Component {
   constructor(props) {
@@ -12,14 +19,17 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // Fetch basic data about each rover: 1) name, number of photos, latest day taken photo
+    const { detectDevice } = this.props;
 
+    detectDevice();
+
+    window.addEventListener("resize", () => detectDevice());
   }
 
   render() {
     const homeRoute = (props) => {
-      return(
-        <Home {...props}/>
+      return (
+        <Home {...props} />
       )
     }
 
@@ -31,4 +41,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect(null, mapDispatchToProps)(App);

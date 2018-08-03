@@ -2,28 +2,45 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Route, NavLink } from 'react-router-dom';
 import LazyLoad from 'react-lazy-load';
-import { cameraChosen } from "../../redux/actions/userChooses";
+import { cameraChosen, dayChosen } from "../../redux/actions/userChooses";
 
 const mapStateToProps = (state, ownProps) => {
   const thisRover    = state.userChosen.rover;
   const choseACamera = state.userChosen.camera ? true : false;
-  const thisCamera   = ownProps.match.params.camera;
+  const thisCamera   = state.userChosen.camera;
   const latestDay    = state.rovers[thisRover].max_date;
   const choseADay    = state.userChosen.day ? true : false;
   const thisDay      = state.userChosen.day;
+
+  let pictures = [];
+
+  if(choseADay){
+    if(choseACamera){
+      pictures = state.days[thisRover][thisDay].filter(p => p.camera.name.toUpperCase());
+    } else {
+      pictures = state.days[thisRover][thisDay];
+    }
+  } else {
+    if(choseACamera){
+      pictures = state.days[thisRover][latestDay].filter(p => p.camera.name.toUpperCase());
+    } else {
+      pictures = state.days[thisRover][latestDay];
+    }
+  }
 
   return {
     camera: thisCamera,
     hasChoseCamera: choseACamera ? true : false,
     day: choseADay ? thisDay : latestDay,
-    pictures: choseADay ? state.days[thisRover][thisDay] : state.days[thisRover][latestDay],
+    pictures: pictures,
     chosenPicture: state.userChosen.picture
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    chooseCamera: (id) => dispatch(cameraChosen(id))
+    chooseCamera: (id) => dispatch(cameraChosen(id)),
+    grabNextDay: (date) => dispatch(dayChosen(date))
   }
 }
 
@@ -35,13 +52,18 @@ class Gallery extends Component {
   componentWillMount() {
     const { camera, chooseCamera } = this.props;
 
-    chooseCamera(camera)
+    if(camera !== undefined){
+      chooseCamera(camera)
+    }
   }
 
   componentDidUpdate(prevProps) {
     const { camera, chooseCamera } = this.props;
 
+    console.log(prevProps)
+    console.log(prevProps.camera, camera)
     if (prevProps.camera !== camera) {
+      console.log("previous prop for camera do not match current prop for camera")
       chooseCamera(camera)
     }
   }
@@ -49,28 +71,22 @@ class Gallery extends Component {
   render() {
     const { day, pictures } = this.props;
 
-    console.log(pictures)
-
     return (
       <div>
-        {/*<Masonry*/}
-          {/*options={{ transitionDuration: 0 }}*/}
-          {/*className="camera-gallery"*/}
-          {/*elementType="ul">*/}
           <ul className={"columns"}>
           {pictures.map(p => {
-            const key = Object.keys(p)
+            const key = Object.keys(p);
+            const data = p[key];
             return (
-              <li key={p.id} className="column is-3-desktop" style={{height:480}}>
+              <li key={data.id} className="column is-3-desktop" style={{height:480}}>
                 <LazyLoad height={480}>
-                  <div style={{backgroundImage:`url(${p[key].img_src})`,height:480}}/>
-                  {/*<img src={p[key].img_src} alt={`Picture taken by ${p[key].camera.name} on ${p.eart_date}`} />*/}
+                  {/*<div style={{backgroundImage:`url(${p[key].img_src})`,height:480}}/>*/}
+                  <img src={data.img_src} alt={`Picture taken by ${data.camera.name} on ${data.earth_date}`} />
                 </LazyLoad>
               </li>
             )
           })}
           </ul>
-        {/*</Masonry>*/}
         {/*
           Photos from latest day mapped out (Component)
           Camera chosen or not chosen? (Needed) bool

@@ -17,6 +17,7 @@ const daysState = {};
 daysData.map(d => daysState[d.id] = d);
 
 const preloadedState = {
+  device: undefined,
   userChosen:{
     rover: undefined,
     camera: undefined,
