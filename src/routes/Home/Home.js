@@ -3,9 +3,12 @@ import { connect } from 'react-redux';
 import { Switch, Route, Link, Redirect } from 'react-router-dom';
 import cx from 'classnames';
 import Rover from '../Rover';
-import curiosity_retina from './img/retina/curiosity.jpg';
-import opportunity_retina from './img/retina/opportunity.jpg';
-import spirit_retina from './img/retina/spirit.jpg';
+import curiosity_mobile from './img/retina/mobile/curiosity.jpg';
+import opportunity_mobile from './img/retina/mobile/opportunity.jpg';
+import spirit_mobile from './img/retina/mobile/spirit.jpg';
+import curiosity_tablet from './img/retina/tablet/curiosity.jpg';
+import opportunity_tablet from './img/retina/tablet/opportunity.jpg';
+import spirit_tablet from './img/retina/tablet/spirit.jpg';
 import './Home.css';
 
 const mapStateToProps = state => {
@@ -33,7 +36,7 @@ class Home extends Component {
           {rovers.map((r, i) => {
             const name = r.toLowerCase();
             return (
-              <div key={`rover-navlink-${i}`} className={cx("column", roverSpecificColumn[name])}>
+              <div key={`rover-navlink-${i}`} className={cx("column", `${roverSpecificColumn[name]}-${device}`)}>
                 <Link to={`/${name}`}>
                   <img src={backgroundImages[device][name]} alt={`${name}`} />
                   <h2>{r}</h2>
@@ -61,27 +64,27 @@ class Home extends Component {
 Home.defaultProps = {
   backgroundImages: {
     mobile: {
-      curiosity: [curiosity_retina],
-      opportunity: [opportunity_retina],
-      spirit: [spirit_retina],
+      curiosity: [curiosity_mobile],
+      opportunity: [opportunity_mobile],
+      spirit: [spirit_mobile],
     },
     tablet: {
       // @TO-DO: need to change
-      curiosity: [curiosity_retina],
-      opportunity: [opportunity_retina],
-      spirit: [spirit_retina],
+      curiosity: [curiosity_tablet],
+      opportunity: [opportunity_tablet],
+      spirit: [spirit_tablet],
     },
     desktop: {
       // @TO-DO: need to change
-      curiosity: [curiosity_retina],
-      opportunity: [opportunity_retina],
-      spirit: [spirit_retina],
+      curiosity: [curiosity_mobile],
+      opportunity: [opportunity_mobile],
+      spirit: [spirit_mobile],
     }
   },
   roverSpecificColumn: {
-    curiosity: "is-12-mobile",
-    opportunity: "is-6-mobile",
-    spirit: "is-6-mobile",
+    curiosity: "is-12",
+    opportunity: "is-6",
+    spirit: "is-6",
   }
 }
 
