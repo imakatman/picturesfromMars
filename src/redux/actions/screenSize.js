@@ -18,8 +18,6 @@ export function calculateScreenSize() {
 
   const currentDevice = mediaQuery.filter(mq => mq[Object.keys(mq)] === true)[0]
 
-  console.log(mediaQuery)
-
   return {
     type: CALCULATED_SCREEN_SIZE,
     device: Object.keys(currentDevice)[0]

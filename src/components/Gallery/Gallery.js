@@ -7,29 +7,29 @@ import { cameraChosen, dayChosen } from "../../redux/actions/userChooses";
 const mapStateToProps = (state, ownProps) => {
   const thisRover    = state.userChosen.rover;
   const choseACamera = state.userChosen.camera ? true : false;
-  const thisCamera   = state.userChosen.camera;
+  const chosenCamera = ownProps.match.params.camera.toUpperCase();
   const latestDay    = state.rovers[thisRover].max_date;
   const choseADay    = state.userChosen.day ? true : false;
   const thisDay      = state.userChosen.day;
 
   let pictures = [];
 
-  if(choseADay){
-    if(choseACamera){
-      pictures = state.days[thisRover][thisDay].filter(p => p.camera.name.toUpperCase());
+  if (choseADay) {
+    if (choseACamera) {
+      pictures = state.days[thisRover][thisDay].filter(p => chosenCamera === p[Object.keys(p)].camera.name.toUpperCase());
     } else {
       pictures = state.days[thisRover][thisDay];
     }
   } else {
-    if(choseACamera){
-      pictures = state.days[thisRover][latestDay].filter(p => p.camera.name.toUpperCase());
+    if (choseACamera) {
+      pictures = state.days[thisRover][latestDay].filter(p => chosenCamera === p[Object.keys(p)].camera.name.toUpperCase());
     } else {
       pictures = state.days[thisRover][latestDay];
     }
   }
 
   return {
-    camera: thisCamera,
+    camera: chosenCamera,
     hasChoseCamera: choseACamera ? true : false,
     day: choseADay ? thisDay : latestDay,
     pictures: pictures,
@@ -52,31 +52,35 @@ class Gallery extends Component {
   componentWillMount() {
     const { camera, chooseCamera } = this.props;
 
-    if(camera !== undefined){
+    if (camera !== undefined) {
       chooseCamera(camera)
     }
   }
 
-  componentDidUpdate(prevProps) {
-    const { camera, chooseCamera } = this.props;
-
-    if (prevProps.camera !== camera) {
-      console.log("previous prop for camera do not match current prop for camera")
-      chooseCamera(camera)
-    }
-  }
+  // componentDidUpdate(prevProps) {
+  //   const { match, chooseCamera } = this.props;
+  //
+  //   const chosenCamera = match.params.camera;
+  //
+  //   console.log(this.props.match)
+  //   console.log(prevProps.chosenCamera, match.params.camera)
+  //
+  //   if (prevProps.chosenCamera !== chosenCamera) {
+  //     chooseCamera(chosenCamera)
+  //   }
+  // }
 
   render() {
     const { day, pictures } = this.props;
 
     return (
       <div>
-          <ul className={"columns"}>
+        <ul className={"columns"}>
           {pictures.map(p => {
-            const key = Object.keys(p);
+            const key  = Object.keys(p);
             const data = p[key];
             return (
-              <li key={data.id} className="column is-3-desktop" style={{height:480}}>
+              <li key={data.id} className="column is-3-desktop" style={{ height: 480 }}>
                 <LazyLoad height={480}>
                   {/*<div style={{backgroundImage:`url(${p[key].img_src})`,height:480}}/>*/}
                   <img src={data.img_src} alt={`Picture taken by ${data.camera.name} on ${data.earth_date}`} />
@@ -84,7 +88,7 @@ class Gallery extends Component {
               </li>
             )
           })}
-          </ul>
+        </ul>
         {/*
           Photos from latest day mapped out (Component)
           Camera chosen or not chosen? (Needed) bool

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Route, NavLink } from 'react-router-dom';
 import Description from '../../components/Description';
 import Gallery from '../../components/Gallery';
-import { roverChosen } from "../../redux/actions/userChooses";
+import { cameraChosen, roverChosen } from "../../redux/actions/userChooses";
 
 const mapStateToProps = (state, ownProps) => {
   const thisRoverName = ownProps.match.params.rover;
@@ -42,7 +42,12 @@ class Rover extends Component {
           {cameras.map(c => {
             return (
               <li key={`${rover}-camera-li-${c.name}`}>
-                <NavLink to={`${match.url}/${c.name.toLowerCase()}`}>
+                <NavLink to={{
+                  pathname: `${match.url}/${c.name.toLowerCase()}`,
+                  state:{
+                    chosenCamera: c.name
+                  }
+                }}>
                   {c.full_name}
                 </NavLink>
               </li>

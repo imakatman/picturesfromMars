@@ -27,7 +27,7 @@ class Home extends Component {
   }
 
   render() {
-    const { match, rovers, device, backgroundImages, roverSpecificColumn } = this.props;
+    const { rovers, device, backgroundImages, roverSpecificColumn } = this.props;
 
     return (
       <div>
