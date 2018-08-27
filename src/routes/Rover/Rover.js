@@ -38,25 +38,23 @@ class Rover extends Component {
     return (
       <div>
         <Description rover={rover} />
-        <ul>
-          {cameras.map(c => {
-            return (
-              <li key={`${rover}-camera-li-${c.name}`}>
-                <NavLink to={{
-                  pathname: `${match.url}/${c.name.toLowerCase()}`,
-                  state:{
-                    chosenCamera: c.name
-                  }
-                }}>
-                  {c.full_name}
-                </NavLink>
-              </li>
-            )
-          })}
-        </ul>
-        {rover &&
-        <Route path={`${match.url}/:camera`} render={props => <Gallery {...props}/>}/>
-        }
+        {/*<ul>*/}
+          {/*{cameras.map(c => {*/}
+            {/*return (*/}
+              {/*<li key={`${rover}-camera-li-${c.name}`}>*/}
+                {/*<NavLink to={{*/}
+                  {/*pathname: `${match.url}/${c.name.toLowerCase()}`,*/}
+                  {/*state:{*/}
+                    {/*chosenCamera: c.name*/}
+                  {/*}*/}
+                {/*}}>*/}
+                  {/*{c.full_name}*/}
+                {/*</NavLink>*/}
+              {/*</li>*/}
+            {/*)*/}
+          {/*})}*/}
+        {/*</ul>*/}
+        <Gallery />
       </div>
     )
   }

@@ -5,33 +5,24 @@ import LazyLoad from 'react-lazy-load';
 import { cameraChosen, dayChosen } from "../../redux/actions/userChooses";
 
 const mapStateToProps = (state, ownProps) => {
-  const thisRover    = state.userChosen.rover;
-  const choseACamera = state.userChosen.camera ? true : false;
-  const chosenCamera = ownProps.match.params.camera.toUpperCase();
-  const latestDay    = state.rovers[thisRover].max_date;
-  const choseADay    = state.userChosen.day ? true : false;
-  const thisDay      = state.userChosen.day;
+  const thisRover = state.userChosen.rover;
+  const latestDay = state.rovers[thisRover].max_date;
+  //const choseADay    = state.userChosen.day ? true : false;
+  //const thisDay      = state.userChosen.day;
 
-  let pictures = [];
+  // let pictures = [];
 
-  if (choseADay) {
-    if (choseACamera) {
-      pictures = state.days[thisRover][thisDay].filter(p => chosenCamera === p[Object.keys(p)].camera.name.toUpperCase());
-    } else {
-      pictures = state.days[thisRover][thisDay];
-    }
-  } else {
-    if (choseACamera) {
-      pictures = state.days[thisRover][latestDay].filter(p => chosenCamera === p[Object.keys(p)].camera.name.toUpperCase());
-    } else {
-      pictures = state.days[thisRover][latestDay];
-    }
-  }
+  // if (choseADay) {
+  //   if (choseACamera) {
+  //     pictures = state.days[thisRover][thisDay].filter(p => chosenCamera ===
+  // p[Object.keys(p)].camera.name.toUpperCase()); } else { pictures = state.days[thisRover][thisDay]; } } else { if
+  // (choseACamera) { pictures = state.days[thisRover][latestDay].filter(p => chosenCamera ===
+  // p[Object.keys(p)].camera.name.toUpperCase()); } else { pictures = state.days[thisRover][latestDay]; } }
+
+  let pictures = state.days[thisRover][latestDay]
 
   return {
-    camera: chosenCamera,
-    hasChoseCamera: choseACamera ? true : false,
-    day: choseADay ? thisDay : latestDay,
+    // day: choseADay ? thisDay : latestDay,
     pictures: pictures,
     chosenPicture: state.userChosen.picture
   }
@@ -57,19 +48,6 @@ class Gallery extends Component {
     }
   }
 
-  // componentDidUpdate(prevProps) {
-  //   const { match, chooseCamera } = this.props;
-  //
-  //   const chosenCamera = match.params.camera;
-  //
-  //   console.log(this.props.match)
-  //   console.log(prevProps.chosenCamera, match.params.camera)
-  //
-  //   if (prevProps.chosenCamera !== chosenCamera) {
-  //     chooseCamera(chosenCamera)
-  //   }
-  // }
-
   render() {
     const { day, pictures } = this.props;
 
@@ -79,35 +57,29 @@ class Gallery extends Component {
           {pictures.map(p => {
             const key  = Object.keys(p);
             const data = p[key];
+
+            const cameraFull   = data.camera.full_name;
+            const cameraAbbrev = data.camera.name;
+            const earthDate    = data.earth_date;
+            const sol          = data.sol;
+            const id           = data.id;
+
             return (
               <li key={data.id} className="column is-3-desktop" style={{ height: 480 }}>
-                <LazyLoad height={480}>
+                <LazyLoad height={375}>
                   {/*<div style={{backgroundImage:`url(${p[key].img_src})`,height:480}}/>*/}
-                  <img src={data.img_src} alt={`Picture taken by ${data.camera.name} on ${data.earth_date}`} />
+                  <a href={data.img_src}>
+
+                  </a>
+                  <img src={data.img_src} alt={`Picture taken by ${cameraAbbrev} on ${earthDate}`} />
                 </LazyLoad>
+                <p>{cameraFull} / {cameraAbbrev}</p>
+                <p>{earthDate} / {sol}</p>
+                <a href={data.img_src} download={`${cameraAbbrev}_${earthDate}_${id}`}>Download</a>
               </li>
             )
           })}
         </ul>
-        {/*
-          Photos from latest day mapped out (Component)
-          Camera chosen or not chosen? (Needed) bool
-          If Chosen...
-          1) Rover Id (needed)
-          2) Camera Id (needed)
-          3) Day Id (needed)
-          Else ...
-          1) Rover Id (needed)
-          2) Day Id (needed)
-         */}
-        {/*
-          Button to view next day or previous day
-          pickADay(id)
-        */}
-        {/*
-          Calender to view photos from a specific day
-          pickADay(id)
-        */}
         {/*
           Component: (Modal)
           Modal of photo selected
