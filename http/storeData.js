@@ -80,7 +80,7 @@ function grabPhotos(database, fsrd, res, rej) {
     return new Promise(r => setTimeout(r, 1000))
   }
 
-  for (let i = maxSol; i > maxSol - 50; i--) {
+  for (let i = maxSol; i > maxSol - 10; i--) {
     let earthDate, earth_date;
     console.log(chain)
     chain = chain.then(() => {

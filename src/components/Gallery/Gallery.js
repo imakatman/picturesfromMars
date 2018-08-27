@@ -60,8 +60,6 @@ class Gallery extends Component {
   componentDidUpdate(prevProps) {
     const { camera, chooseCamera } = this.props;
 
-    console.log(prevProps)
-    console.log(prevProps.camera, camera)
     if (prevProps.camera !== camera) {
       console.log("previous prop for camera do not match current prop for camera")
       chooseCamera(camera)

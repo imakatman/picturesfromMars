@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Switch, Route, Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import cx from 'classnames';
-import Rover from '../Rover';
 import curiosity_mobile from './img/retina/mobile/curiosity.jpg';
 import opportunity_mobile from './img/retina/mobile/opportunity.jpg';
 import spirit_mobile from './img/retina/mobile/spirit.jpg';
@@ -45,17 +44,6 @@ class Home extends Component {
             )
           })}
         </nav>
-        <Switch>
-          {rovers.map((r, i) => {
-            return (
-              <Route
-                key={`rover-route-${i}`}
-                path={`${match.url}:rover`}
-                render={props => <Rover {...props} />}
-              />
-            )
-          })}
-        </Switch>
       </div>
     )
   }
