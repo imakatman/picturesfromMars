@@ -1,14 +1,15 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Route, NavLink } from 'react-router-dom';
-import LazyLoad from 'react-lazy-load';
-import { cameraChosen, dayChosen } from "../../redux/actions/userChooses";
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import InfiniteScroll from 'react-infinite-scroller'
+import LazyLoad from 'react-lazy-load'
+import moment from 'moment'
+import { cameraChosen, dayChosen } from "../../redux/actions/userChooses"
 
 const mapStateToProps = (state, ownProps) => {
   const thisRover = state.userChosen.rover;
   const latestDay = state.rovers[thisRover].max_date;
   //const choseADay    = state.userChosen.day ? true : false;
-  //const thisDay      = state.userChosen.day;
+  const thisDay      = state.userChosen.day;
 
   // let pictures = [];
 
@@ -19,10 +20,12 @@ const mapStateToProps = (state, ownProps) => {
   // (choseACamera) { pictures = state.days[thisRover][latestDay].filter(p => chosenCamera ===
   // p[Object.keys(p)].camera.name.toUpperCase()); } else { pictures = state.days[thisRover][latestDay]; } }
 
-  let pictures = state.days[thisRover][latestDay]
+  let pictures = state.pictures[thisRover][latestDay]
 
   return {
     // day: choseADay ? thisDay : latestDay,
+    currentDay: thisDay,
+    dataAvailable: state.pictures[thisRover][thisDay] !== [],
     pictures: pictures,
     chosenPicture: state.userChosen.picture
   }
@@ -31,13 +34,15 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => {
   return {
     chooseCamera: (id) => dispatch(cameraChosen(id)),
-    grabNextDay: (date) => dispatch(dayChosen(date))
+    grabPicturesByDay: (date) => dispatch(dayChosen(date))
   }
 }
 
 class Gallery extends Component {
   constructor(props) {
     super(props);
+
+    this.grabNextAvailableDay = this.grabNextAvailableDay.bind(this)
   }
 
   componentWillMount() {
@@ -48,11 +53,28 @@ class Gallery extends Component {
     }
   }
 
+  grabNextAvailableDay(day){
+    console.log("grabNextAvailableDay")
+
+    const {grabPicturesByDay, pictures} = this.props;
+    let nextPreviousDay = moment(day).subtract("1", "d");
+
+    if(pictures.nextPreviousDay !== []){
+      grabPicturesByDay(nextPreviousDay)
+    } else {
+      nextPreviousDay = moment(nextPreviousDay).subtract("1", "d");
+      this.grabNextAvailableDay(nextPreviousDay)
+    }
+  }
+
   render() {
-    const { day, pictures } = this.props;
+    const { latestDay, pictures } = this.props;
 
     return (
-      <div>
+      <InfiniteScroll
+        loadMore={this.grabNextAvailableDay(latestDay)}
+        loader={<div>Loading...</div>}
+      >
         <ul className={"columns"}>
           {pictures.map(p => {
             const key  = Object.keys(p);
@@ -67,11 +89,9 @@ class Gallery extends Component {
             return (
               <li key={data.id} className="column is-3-desktop" style={{ height: 480 }}>
                 <LazyLoad height={375}>
-                  {/*<div style={{backgroundImage:`url(${p[key].img_src})`,height:480}}/>*/}
                   <a href={data.img_src}>
-
+                    <img src={data.img_src} alt={`Picture taken by ${cameraAbbrev} on ${earthDate}`} />
                   </a>
-                  <img src={data.img_src} alt={`Picture taken by ${cameraAbbrev} on ${earthDate}`} />
                 </LazyLoad>
                 <p>{cameraFull} / {cameraAbbrev}</p>
                 <p>{earthDate} / {sol}</p>
@@ -85,7 +105,7 @@ class Gallery extends Component {
           Modal of photo selected
           1) Picture Id (needed)
          */}
-      </div>
+      </InfiniteScroll>
     )
   }
 }

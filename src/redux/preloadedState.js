@@ -2,7 +2,7 @@
  * Created by hope.kim on 6/25/18.
  */
 import roversData from "./data/rovers.json";
-import daysData from "./data/dates.json";
+import picturesData from "./data/pictures.json";
 
 const roversState = {};
 roversData.map(r => roversState[r.id] = r)
@@ -13,8 +13,11 @@ roversState.list = roversData.map(r => {
   }
 })
 
+const picturesState = {};
+picturesData.map(d => picturesState[d.id] = d);
+
 const daysState = {};
-daysData.map(d => daysState[d.id] = d);
+//picturesData.map(d => daysState[d.id] = );
 
 const preloadedState = {
   device: undefined,
@@ -25,6 +28,7 @@ const preloadedState = {
     picture: undefined,
   },
   rovers: roversState,
+  pictures: picturesState,
   days: daysState
 }
 
