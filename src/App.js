@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import 'bulma/css/bulma.min.css';
-import logo from './logo.svg'
 import './App.css';
 import Home from './routes/Home';
 import { calculateScreenSize } from './redux/actions/screenSize';
@@ -21,10 +20,6 @@ const mapDispatchToProps = dispatch => {
 }
 
 class App extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   componentDidMount() {
     const { detectDevice } = this.props;
 

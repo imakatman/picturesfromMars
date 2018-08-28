@@ -18,14 +18,6 @@ const mapStateToProps = state => {
 }
 
 class Home extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  componentDidMount() {
-
-  }
-
   render() {
     const { rovers, device, backgroundImages, roverSpecificColumn } = this.props;
 

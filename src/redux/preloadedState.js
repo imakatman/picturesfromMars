@@ -25,9 +25,6 @@ picturesData.map(d => {
   }
 });
 
-const daysState = {};
-//picturesData.map(d => daysState[d.id] = );
-
 const preloadedState = {
   device: undefined,
   userChosen:{

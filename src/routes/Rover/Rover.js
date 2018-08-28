@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Route, NavLink } from 'react-router-dom';
 import Description from '../../components/Description';
 import Gallery from '../../components/Gallery';
-import { cameraChosen, roverChosen } from "../../redux/actions/userChooses";
+import { roverChosen } from "../../redux/actions/userChooses";
 
 const mapStateToProps = (state, ownProps) => {
   const thisRoverName = ownProps.match.params.rover;
@@ -22,10 +21,6 @@ const mapDispatchToProps = dispatch => {
 }
 
 class Rover extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentWillMount() {
     const { rover, chooseRover } = this.props;
 
@@ -33,26 +28,26 @@ class Rover extends Component {
   }
 
   render() {
-    const { match, rover, cameras } = this.props;
+    const { rover } = this.props;
 
     return (
       <div>
         <Description rover={rover} />
         {/*<ul>*/}
-          {/*{cameras.map(c => {*/}
-            {/*return (*/}
-              {/*<li key={`${rover}-camera-li-${c.name}`}>*/}
-                {/*<NavLink to={{*/}
-                  {/*pathname: `${match.url}/${c.name.toLowerCase()}`,*/}
-                  {/*state:{*/}
-                    {/*chosenCamera: c.name*/}
-                  {/*}*/}
-                {/*}}>*/}
-                  {/*{c.full_name}*/}
-                {/*</NavLink>*/}
-              {/*</li>*/}
-            {/*)*/}
-          {/*})}*/}
+        {/*{cameras.map(c => {*/}
+        {/*return (*/}
+        {/*<li key={`${rover}-camera-li-${c.name}`}>*/}
+        {/*<NavLink to={{*/}
+        {/*pathname: `${match.url}/${c.name.toLowerCase()}`,*/}
+        {/*state:{*/}
+        {/*chosenCamera: c.name*/}
+        {/*}*/}
+        {/*}}>*/}
+        {/*{c.full_name}*/}
+        {/*</NavLink>*/}
+        {/*</li>*/}
+        {/*)*/}
+        {/*})}*/}
         {/*</ul>*/}
         <Gallery />
       </div>
