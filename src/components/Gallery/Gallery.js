@@ -1,3 +1,5 @@
+// TODO: 2018-08-14 isn't being added to pictures
+
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import InfiniteScroll from 'react-infinite-scroller'
@@ -5,28 +7,16 @@ import LazyLoad from 'react-lazy-load'
 import moment from 'moment'
 import { cameraChosen, dayChosen } from "../../redux/actions/userChooses"
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   const thisRover = state.userChosen.rover;
   const latestDay = state.rovers[thisRover].max_date;
-  //const choseADay    = state.userChosen.day ? true : false;
-  const thisDay      = state.userChosen.day;
-
-  // let pictures = [];
-
-  // if (choseADay) {
-  //   if (choseACamera) {
-  //     pictures = state.days[thisRover][thisDay].filter(p => chosenCamera ===
-  // p[Object.keys(p)].camera.name.toUpperCase()); } else { pictures = state.days[thisRover][thisDay]; } } else { if
-  // (choseACamera) { pictures = state.days[thisRover][latestDay].filter(p => chosenCamera ===
-  // p[Object.keys(p)].camera.name.toUpperCase()); } else { pictures = state.days[thisRover][latestDay]; } }
-
-  let pictures = state.pictures[thisRover][latestDay]
+  const chosenDay = state.userChosen.day;
 
   return {
-    // day: choseADay ? thisDay : latestDay,
-    currentDay: thisDay,
-    dataAvailable: state.pictures[thisRover][thisDay] !== [],
-    pictures: pictures,
+    latestDay: latestDay,
+    picturesByDay: chosenDay ? state.pictures[thisRover][chosenDay] : state.pictures[thisRover][latestDay],
+    allPictures: state.pictures[thisRover],
+    days: state.pictures[thisRover]["days"],
     chosenPicture: state.userChosen.picture
   }
 }
@@ -42,7 +32,13 @@ class Gallery extends Component {
   constructor(props) {
     super(props);
 
-    this.grabNextAvailableDay = this.grabNextAvailableDay.bind(this)
+    this.state = {
+      pictures: this.props.picturesByDay,
+      dateToDisplay: this.props.latestDay
+    }
+
+    this.grabPrevDayFromLatest = this.grabPrevDayFromLatest.bind(this);
+    this.grabPrevAvailableDay  = this.grabPrevAvailableDay.bind(this);
   }
 
   componentWillMount() {
@@ -53,26 +49,45 @@ class Gallery extends Component {
     }
   }
 
-  grabNextAvailableDay(day){
-    console.log("grabNextAvailableDay")
+  componentWillUpdate(prevProps) {
+    const { picturesByDay } = this.props;
+    const { pictures }      = this.state;
 
-    const {grabPicturesByDay, pictures} = this.props;
-    let nextPreviousDay = moment(day).subtract("1", "d");
+    if (prevProps.picturesByDay !== picturesByDay) {
+      this.setState({
+        pictures: pictures.concat(picturesByDay)
+      })
+    }
+  }
 
-    if(pictures.nextPreviousDay !== []){
-      grabPicturesByDay(nextPreviousDay)
+  grabPrevDayFromLatest() {
+    const { dateToDisplay } = this.state;
+
+    this.grabPrevAvailableDay(dateToDisplay);
+  }
+
+  grabPrevAvailableDay(day) {
+    const { grabPicturesByDay, days, allPictures } = this.props;
+    let prevDay                                    = moment(day).subtract("1", "d").format("YYYY-MM-DD");
+    const prevDayHasPictures                       = days.filter(d => allPictures[d] === prevDay)[0] !== []
+
+    console.log("days.filter(d => allPictures[d] === prevDay)[0] !== []", days.filter(d => allPictures[d] === prevDay)[0] !== [])
+
+    if (prevDayHasPictures) {
+      this.setState({ dateToDisplay: prevDay }, () => grabPicturesByDay(prevDay));
     } else {
-      nextPreviousDay = moment(nextPreviousDay).subtract("1", "d");
-      this.grabNextAvailableDay(nextPreviousDay)
+      prevDay = moment(prevDay).subtract("1", "d");
+      this.setState({ dateToDisplay: prevDay }, () => this.grabNextAvailableDay(prevDay))
     }
   }
 
   render() {
-    const { latestDay, pictures } = this.props;
+    const { pictures } = this.state;
 
     return (
       <InfiniteScroll
-        loadMore={this.grabNextAvailableDay(latestDay)}
+        loadMore={this.grabPrevDayFromLatest}
+        hasMore={true}
         loader={<div>Loading...</div>}
       >
         <ul className={"columns"}>
@@ -88,7 +103,7 @@ class Gallery extends Component {
 
             return (
               <li key={data.id} className="column is-3-desktop" style={{ height: 480 }}>
-                <LazyLoad height={375}>
+                <LazyLoad height={375} offset={500}>
                   <a href={data.img_src}>
                     <img src={data.img_src} alt={`Picture taken by ${cameraAbbrev} on ${earthDate}`} />
                   </a>

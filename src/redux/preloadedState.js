@@ -14,7 +14,16 @@ roversState.list = roversData.map(r => {
 })
 
 const picturesState = {};
-picturesData.map(d => picturesState[d.id] = d);
+picturesData.map(d => {
+  picturesState[d.id] = d;
+  picturesState[d.id].days = [];
+  for (var key in d) {
+    // Does string start with a number?
+    if (key.match(/^\d/)) {
+      picturesState[d.id].days.push(key)
+    }
+  }
+});
 
 const daysState = {};
 //picturesData.map(d => daysState[d.id] = );
@@ -29,7 +38,6 @@ const preloadedState = {
   },
   rovers: roversState,
   pictures: picturesState,
-  days: daysState
 }
 
 export default preloadedState;
