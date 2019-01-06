@@ -2,6 +2,8 @@
 // Actions
 // ******************
 
+import { ROVER_CHOSEN } from "./userChooses"
+
 export const CALCULATED_SCREEN_SIZE = "CALCULATED_SCREEN_SIZE";
 
 // ************
@@ -21,5 +23,20 @@ export function calculateScreenSize() {
   return {
     type: CALCULATED_SCREEN_SIZE,
     device: Object.keys(currentDevice)[0]
+  }
+}
+
+// ************
+// Action Types
+// ******************
+
+export function screenSpecs(state = {}, action) {
+  switch (action.type) {
+    case CALCULATED_SCREEN_SIZE:
+      return Object.assign({}, state, {
+        device: action.device
+      });
+    default:
+      return state;
   }
 }

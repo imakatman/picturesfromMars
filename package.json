@@ -4,8 +4,10 @@
   "private": true,
   "dependencies": {
     "ajv": "^6.5.2",
+    "array.prototype.fill": "^1.0.2",
     "bulma": "^0.7.1",
     "classnames": "^2.2.6",
+    "dialog-polyfill": "^0.4.10",
     "moment": "^2.22.2",
     "mongodb": "^3.0.10",
     "node-fetch": "^2.1.2",

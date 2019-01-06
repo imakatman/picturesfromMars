@@ -13,7 +13,7 @@ const exampleStore = {
     ]
   ],
   // ** End Redux specific data
-  Rovers: {
+  rovers: {
     ...,
     Rover: {
       name: 'string',
@@ -40,9 +40,9 @@ const exampleStore = {
   //     rover: 'string'
   //   }
   // },
-  Days: {
+  days: {
     "date": {
-      Rover: [
+      rover: [
         {
           "photo_id": {
             src: 'string',

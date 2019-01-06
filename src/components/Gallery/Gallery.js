@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import InfiniteScroll from 'react-infinite-scroller'
 import LazyLoad from 'react-lazy-load'
 import moment from 'moment'
-import { cameraChosen, dayChosen } from "../../redux/actions/userChooses"
+import { cameraChosen, dayChosen } from "../../redux/ducks/userChooses"
 
 const mapStateToProps = (state) => {
   const thisRover = state.userChosen.rover;

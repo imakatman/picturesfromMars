@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Description from '../../components/Description';
 import Gallery from '../../components/Gallery';
-import { roverChosen } from "../../redux/actions/userChooses";
+import { roverChosen } from "../../redux/ducks/userChooses";
 
 const mapStateToProps = (state, ownProps) => {
   const thisRoverName = ownProps.match.params.rover;

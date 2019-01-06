@@ -1,3 +1,9 @@
+// Polyfills for IE >= 8
+import 'core-js/es6/map';
+import 'core-js/es6/set';
+import 'array.prototype.fill';
+import 'dialog-polyfill';
+
 import React from 'react';
 import { Provider } from 'react-redux';
 import ReactDOM from 'react-dom';

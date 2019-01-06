@@ -1,18 +1,26 @@
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import { createLogger } from 'redux-logger';
-import rootReducer from './rootReducer';
 import preloadedState from './preloadedState';
+import { screenSpecs } from './ducks/screenSpecs';
+import { userChosen } from './ducks/userChooses';
+import { rovers } from './ducks/apiManifest';
 
-const middleware = [ thunk ];
+const middleware = [thunk];
 
 if (process.env.NODE_ENV !== 'production') {
   middleware.push(createLogger())
 }
 
-function configureStore () {
+const roversApp = combineReducers({
+  userChosen,
+  screenSpecs,
+  rovers
+})
+
+function configureStore() {
   return createStore(
-    rootReducer,
+    roversApp,
     preloadedState,
     applyMiddleware(...middleware)
   );
