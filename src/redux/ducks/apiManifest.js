@@ -49,40 +49,43 @@ export function getManifest(update){
     })
       .then(response => {
         status = response.status;
-        if (!response.ok) {
+        console.log(response)
+        if (!response.ok && !response.status) {
           dispatch(getManifestFailure(status, response));
           console.log(response);
           return response;
         }
         return response.json();
       }, (err) => {
-        dispatch(getManifestFailure(status, err));
         console.log('bad MANIFEST request');
-      })
-      .then(json => {
-        const hasUpdated = update;
+        dispatch(getManifestFailure(status, err));
+        return null;
+      }).then(json => {
+        console.log(json)
+        if(json){
+          const hasUpdated = update;
 
-        if (json.ok !== undefined && !json.ok) {
-          dispatch(getManifestFailure(status, json));
-          return;
-        }
+          if (json.ok !== undefined && !json.ok) {
+            return dispatch(getManifestFailure(status, json));}
 
-        if(hasUpdated){
-          dispatch(getManifestSuccess(status, json));
-        } else {
-          if (dataNeedsUpdate(json)) {
-            dispatch(getManifest(true));
+          if(hasUpdated){
+            return dispatch(getManifestSuccess(status, json));
           } else {
-            dispatch(getManifestSuccess(status, json));
+            if (dataNeedsUpdate(json)) {
+              return dispatch(getManifest(true));
+            } else {
+              return dispatch(getManifestSuccess(status, json));
+            }
           }
         }
 
+        return dispatch(getManifestFailure(status, "Server is offline"));
       }, (err) => {
         dispatch(getManifestFailure(status, err));
         console.log('bad MANIFEST request - json', err);
       });
   }
-};
+}
 
 function dataNeedsUpdate(data) {
   return data.rovers.map(r => {

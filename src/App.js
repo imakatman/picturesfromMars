@@ -6,6 +6,7 @@ import 'bulma/css/bulma.min.css';
 import './App.css';
 import Home from './routes/Home';
 import Rover from "./routes/Rover"
+import errorImage from './error.jpeg';
 import { calculateScreenSize } from './redux/ducks/screenSpecs';
 import { getManifest } from './redux/ducks/apiManifest';
 
@@ -16,7 +17,7 @@ const mapStateToProps = state => {
     rovers: roversState.list ? roversState.list.map(r => r.name) : null,
     get: {
       isGetting: roversState.isGetting,
-      getSuccessful: roversState.getSuccessful,
+      success: roversState.getSuccessful,
       status: roversState.status
     }
   }
@@ -36,20 +37,32 @@ class App extends Component {
     detectDevice();
     window.addEventListener("resize", () => detectDevice());
 
-    if (get.getSuccessful === null) {
+    if (get.success === null) {
       getManifest();
     }
   }
 
   render() {
-    return (
-      <BrowserRouter>
-        <Switch>
-          <Route component={Home} path="/" exact />
-          <Route path="/:rover" component={Rover} />
-        </Switch>
-      </BrowserRouter>
-    );
+    const {get} = this.props;
+
+    if(!get.success && !get.isGetting){
+      return(
+        <div>
+          <h1>There was a problem, please come back later!</h1>
+          <br />
+          <img src={errorImage} alt="There was a problem, please come back later!" />
+        </div>
+      )
+    } else {
+      return (
+        <BrowserRouter>
+          <Switch>
+            <Route component={Home} path="/" exact />
+            <Route path="/:rover" component={Rover} />
+          </Switch>
+        </BrowserRouter>
+      );
+    }
   }
 }
 
