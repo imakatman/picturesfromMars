@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
-import store from './redux/store';
-import 'bulma/css/bulma.min.css';
 import './App.css';
 import Home from './routes/Home';
 import Rover from "./routes/Rover"
