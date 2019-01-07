@@ -1,5 +1,5 @@
+import moment from 'moment';
 import apiConfig from '../apiConfig';
-import { CALCULATED_SCREEN_SIZE } from "./screenSpecs"
 
 export const GET_MANIFEST_REQUEST  = 'GET_MANIFEST_REQUEST';
 export const GET_MANIFEST_SUCCEEDS = 'GET_MANIFEST_SUCCEEDS';
@@ -37,12 +37,14 @@ export const getManifestFailure = (status, err) => {
 // Redux Thunks
 // ************************************************************************
 
-export const getManifest = () => {
+export function getManifest(update){
   return async dispatch => {
-    let token = apiConfig.token;
+    const token    = apiConfig.token;
+    const endpoint = update ? `${getManifestApiEndpoint}?token=${token}&update=true` : `${getManifestApiEndpoint}?token=${token}`
     let status;
+
     dispatch(getManifestRequest());
-    return await fetch(`${getManifestApiEndpoint}?token=${token}`, {
+    return await fetch(endpoint, {
       method: "get",
     })
       .then(response => {
@@ -58,19 +60,42 @@ export const getManifest = () => {
         console.log('bad MANIFEST request');
       })
       .then(json => {
-        console.log(json);
+        const hasUpdated = update;
+
         if (json.ok !== undefined && !json.ok) {
           dispatch(getManifestFailure(status, json));
           return;
         }
 
-        dispatch(getManifestSuccess(status, json));
+        if(hasUpdated){
+          dispatch(getManifestSuccess(status, json));
+        } else {
+          if (dataNeedsUpdate(json)) {
+            dispatch(getManifest(true));
+          } else {
+            dispatch(getManifestSuccess(status, json));
+          }
+        }
+
       }, (err) => {
         dispatch(getManifestFailure(status, err));
-        console.log('bad MANIFEST request - json');
+        console.log('bad MANIFEST request - json', err);
       });
   }
 };
+
+function dataNeedsUpdate(data) {
+  return data.rovers.map(r => {
+    const roverMaxDate = moment(r.max_date);
+    const today        = moment().format("YYYY-MM-DD");
+
+    if (roverMaxDate.isBefore(today)) {
+      return true;
+    }
+
+    return false;
+  }).some(r => r === true);
+}
 
 // ************************************************************************
 // Reducer
