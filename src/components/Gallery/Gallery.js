@@ -7,17 +7,31 @@ import LazyLoad from 'react-lazy-load'
 import moment from 'moment'
 import { cameraChosen, dayChosen } from "../../redux/ducks/userChooses"
 
-const mapStateToProps = (state) => {
-  const thisRover = state.userChosen.rover;
-  const latestDay = state.rovers[thisRover].max_date;
+const mapStateToProps = (state, ownProps) => {
+  const id    = ownProps.rover.id;
+  const index = ownProps.rover.index;
+  const name = ownProps.rover.name;
+
+  console.log(ownProps)
+  console.log(index)
+  const latestDay = state.rovers.list[index].max_date;
   const chosenDay = state.userChosen.day;
 
+  const picturesState = state.pictures;
+
+  console.log(picturesState)
   return {
     latestDay: latestDay,
-    picturesByDay: chosenDay ? state.pictures[thisRover][chosenDay] : state.pictures[thisRover][latestDay],
-    allPictures: state.pictures[thisRover],
-    days: state.pictures[thisRover]["days"],
-    chosenPicture: state.userChosen.picture
+    picturesByDay: chosenDay ? state.pictures.list[name][chosenDay] : state.pictures.list[name].filter(day => day.Day === latestDay),
+    //allPictures: state.pictures[thisRover],
+    //days: state.pictures[thisRover]["days"],
+    chosenPicture: state.userChosen.picture,
+    getPictures: {
+      isGetting: picturesState.isGetting,
+      success: picturesState.getSuccessful,
+      status: picturesState.status,
+      list: picturesState.list
+    }
   }
 }
 
@@ -82,46 +96,55 @@ class Gallery extends Component {
   }
 
   render() {
-    const { pictures } = this.state;
+    const { getPictures } = this.props;
+    const { pictures }    = this.state;
 
-    return (
-      <InfiniteScroll
-        loadMore={this.grabPrevDayFromLatest}
-        hasMore={true}
-        loader={<div>Loading...</div>}
-      >
-        <ul className={"columns"}>
-          {pictures.map(p => {
-            const key  = Object.keys(p);
-            const data = p[key];
+    if (!getPictures.isGetting && getPictures.list) {
+      return (
+        <InfiniteScroll
+          loadMore={this.grabPrevDayFromLatest}
+          hasMore={true}
+          loader={<div>Loading...</div>}
+        >
+          <ul className={"columns"}>
+            {pictures.map(p => {
+              const key  = Object.keys(p);
+              const data = p[key];
 
-            const cameraFull   = data.camera.full_name;
-            const cameraAbbrev = data.camera.name;
-            const earthDate    = data.earth_date;
-            const sol          = data.sol;
-            const id           = data.id;
+              const cameraFull   = data.camera.full_name;
+              const cameraAbbrev = data.camera.name;
+              const earthDate    = data.earth_date;
+              const sol          = data.sol;
+              const id           = data.id;
 
-            return (
-              <li key={data.id} className="column is-3-desktop" style={{ height: 480 }}>
-                <LazyLoad height={375} offset={500}>
-                  <a href={data.img_src}>
-                    <img src={data.img_src} alt={`Picture taken by ${cameraAbbrev} on ${earthDate}`} />
-                  </a>
-                </LazyLoad>
-                <p>{cameraFull} / {cameraAbbrev}</p>
-                <p>{earthDate} / {sol}</p>
-                <a href={data.img_src} download={`${cameraAbbrev}_${earthDate}_${id}`}>Download</a>
-              </li>
-            )
-          })}
-        </ul>
-        {/*
+              return (
+                <li key={data.id} className="column is-3-desktop" style={{ height: 480 }}>
+                  <LazyLoad height={375} offset={500}>
+                    <a href={data.img_src}>
+                      <img src={data.img_src} alt={`Picture taken by ${cameraAbbrev} on ${earthDate}`} />
+                    </a>
+                  </LazyLoad>
+                  <p>{cameraFull} / {cameraAbbrev}</p>
+                  <p>{earthDate} / {sol}</p>
+                  <a href={data.img_src} download={`${cameraAbbrev}_${earthDate}_${id}`}>Download</a>
+                </li>
+              )
+            })}
+          </ul>
+          {/*
           Component: (Modal)
           Modal of photo selected
           1) Picture Id (needed)
          */}
-      </InfiniteScroll>
-    )
+        </InfiniteScroll>
+      )
+    } else {
+      return (
+        <div>
+          <h2>Loading...</h2>
+        </div>
+      )
+    }
   }
 }
 

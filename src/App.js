@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import './App.css';
 import Home from './routes/Home';
 import Rover from "./routes/Rover"
-import errorImage from './error.jpeg';
 import { calculateScreenSize } from './redux/ducks/screenSpecs';
 import { getManifest } from './redux/ducks/apiManifest';
 
@@ -41,26 +40,14 @@ class App extends Component {
   }
 
   render() {
-    const {get} = this.props;
-
-    if(!get.success && !get.isGetting){
-      return(
-        <div>
-          <h1>There was a problem, please come back later!</h1>
-          <br />
-          <img src={errorImage} alt="There was a problem, please come back later!" />
-        </div>
-      )
-    } else {
-      return (
-        <BrowserRouter>
-          <Switch>
-            <Route component={Home} path="/" exact />
-            <Route path="/:rover" component={Rover} />
-          </Switch>
-        </BrowserRouter>
-      );
-    }
+    return (
+      <BrowserRouter>
+        <Switch>
+          <Route component={Home} path="/" exact />
+          <Route path="/:rover" component={Rover} />
+        </Switch>
+      </BrowserRouter>
+    );
   }
 }
 

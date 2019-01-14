@@ -17,11 +17,11 @@ export const getManifestRequest = () => {
   }
 }
 
-export const getManifestSuccess = (status, data) => {
+export const getManifestSuccess = (status, json) => {
   return {
     type: GET_MANIFEST_SUCCEEDS,
     status,
-    data
+    json
   }
 }
 
@@ -115,7 +115,7 @@ export function rovers(state = {}, action) {
         isGetting: false,
         status: action.status,
         getSuccessful: true,
-        list: action.data.rovers
+        list: action.json.rovers
       });
     case GET_MANIFEST_FAILS:
       return Object.assign({}, state, {

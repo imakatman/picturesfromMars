@@ -5,6 +5,7 @@ import preloadedState from './preloadedState';
 import { screenSpecs } from './ducks/screenSpecs';
 import { userChosen } from './ducks/userChooses';
 import { rovers } from './ducks/apiManifest';
+import { pictures } from './ducks/apiPictures';
 
 const middleware = [thunk];
 
@@ -15,7 +16,8 @@ if (process.env.NODE_ENV !== 'production') {
 const roversApp = combineReducers({
   userChosen,
   screenSpecs,
-  rovers
+  rovers,
+  pictures
 })
 
 function configureStore() {
