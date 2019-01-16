@@ -37,10 +37,10 @@ export const getManifestFailure = (status, err) => {
 // Redux Thunks
 // ************************************************************************
 
-export function getManifest(update){
+export function getManifest() {
   return async dispatch => {
     const token    = apiConfig.token;
-    const endpoint = update ? `${getManifestApiEndpoint}?token=${token}&update=true` : `${getManifestApiEndpoint}?token=${token}`
+    const endpoint =`${getManifestApiEndpoint}?token=${token}`;
     let status;
 
     dispatch(getManifestRequest());
@@ -62,21 +62,11 @@ export function getManifest(update){
         return null;
       }).then(json => {
         console.log(json)
-        if(json){
-          const hasUpdated = update;
-
+        if (json) {
           if (json.ok !== undefined && !json.ok) {
-            return dispatch(getManifestFailure(status, json));}
-
-          if(hasUpdated){
-            return dispatch(getManifestSuccess(status, json));
-          } else {
-            if (dataNeedsUpdate(json)) {
-              return dispatch(getManifest(true));
-            } else {
-              return dispatch(getManifestSuccess(status, json));
-            }
+            return dispatch(getManifestFailure(status, json));
           }
+          return dispatch(getManifestSuccess(status, json));
         }
 
         return dispatch(getManifestFailure(status, "Server is offline"));
@@ -85,19 +75,6 @@ export function getManifest(update){
         console.log('bad MANIFEST request - json', err);
       });
   }
-}
-
-function dataNeedsUpdate(data) {
-  return data.rovers.map(r => {
-    const roverMaxDate = moment(r.max_date);
-    const today        = moment().format("YYYY-MM-DD");
-
-    if (roverMaxDate.isBefore(today)) {
-      return true;
-    }
-
-    return false;
-  }).some(r => r === true);
 }
 
 // ************************************************************************

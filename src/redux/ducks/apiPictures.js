@@ -1,5 +1,6 @@
 import moment from 'moment';
 import apiConfig from '../apiConfig';
+import { getManifest, getManifestSuccess } from "./apiManifest"
 
 export const GET_PICTURES_REQUEST  = 'GET_PICTURES_REQUEST';
 export const GET_PICTURES_SUCCEEDS = 'GET_PICTURES_SUCCEEDS';
@@ -38,10 +39,10 @@ export const getPicturesFailure = (status, err) => {
 // Redux Thunks
 // ************************************************************************
 
-export function getPictures(rover) {
+export function getPictures(rover, update = false) {
   return async dispatch => {
     const token    = apiConfig.token;
-    const endpoint = `${getPicturesApiEndpoint}/${rover}?token=${token}`;
+    const endpoint = update ? `${getPicturesApiEndpoint}/${rover}?token=${token}&update=true` : `${getPicturesApiEndpoint}/${rover}?token=${token}`
     let status;
 
     dispatch(getPicturesRequest());
@@ -62,10 +63,22 @@ export function getPictures(rover) {
         dispatch(getPicturesFailure(status, err));
         return null;
       }).then(json => {
+        const hasUpdated = update;
+
         console.log(json)
         if (json) {
           if (json.ok !== undefined && !json.ok) {
             return dispatch(getPicturesFailure(status, json));
+          }
+
+          if(hasUpdated){
+            return dispatch(getManifestSuccess(status, json));
+          } else {
+            if (dataNeedsUpdate(json)) {
+              return dispatch(getPictures(rover, true));
+            } else {
+              return dispatch(getManifestSuccess(status, json));
+            }
           }
 
           return dispatch(getPicturesSuccess(rover, status, json));
@@ -76,6 +89,19 @@ export function getPictures(rover) {
         console.log('bad GET_PICTURES request - json', err);
       });
   }
+}
+
+function dataNeedsUpdate(data) {
+  return data.rovers.map(r => {
+    const roverMaxDate = moment(r.max_date);
+    const today        = moment().format("YYYY-MM-DD");
+
+    if (roverMaxDate.isBefore(today)) {
+      return true;
+    }
+
+    return false;
+  }).some(r => r === true);
 }
 
 // ************************************************************************
